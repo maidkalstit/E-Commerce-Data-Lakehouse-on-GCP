@@ -18,14 +18,14 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 # ==============================================================================
-# CẤU HÌNH THƯ MỤC MODELS 
+# MODELS CONFIGURATION (Medallion Architecture)
 # ==============================================================================
 models:
   ecommerce_pipeline:
-    # Tầng Staging (Bạc - Đọc trực tiếp từ GCS Parquet qua Zero-ETL)
+    # Staging Layer (Silver - Read directly from GCS Parquet via Zero-ETL)
     staging:
       +materialized: view
       
-    # Tầng Marts (Vàng - Lưu trữ kết quả Report xuống BigQuery nội bộ để tăng tốc BI)
+    # Marts Layer (Gold - Store report results in BigQuery to accelerate BI)
     marts:
       +materialized: table

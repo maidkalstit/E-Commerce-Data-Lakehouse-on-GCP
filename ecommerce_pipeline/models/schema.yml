@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: silver_data
-    # Dùng Jinja đọc thẳng ID dự án từ biến môi trường, bảo mật tuyệt đối!
+    # Dynamically inject GCP Project ID from environment variable for security
     database: "{{ env_var('GCP_PROJECT_ID') }}"
     schema: gold_sales
     tables:
@@ -12,6 +12,16 @@ models:
   - name: daily_revenue
     columns:
       - name: order_date
+        tests:
+          - not_null
+          - unique
+      - name: total_revenue
+        tests:
+          - not_null
+
+  - name: top_products
+    columns:
+      - name: product_id
         tests:
           - not_null
           - unique
