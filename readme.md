@@ -103,6 +103,7 @@ The system utilizes a Medallion Architecture (Bronze -> Silver -> Gold) to progr
 ## ⚙️ Setup & Installation
 
 ### 🐳 Hybrid Architecture (Local Dev & Cloud Execution)
+*Note: The `docker-compose.yaml` file located at the root directory is specifically configured for Local Development to test the Airflow DAGs. In a true Production environment, this orchestration layer would be deployed on a managed service (e.g., Cloud Composer) or a dedicated Google Compute Engine (GCE) VM.*
 This project is designed with a Hybrid architecture to optimize both developer experience and cloud FinOps:
 - **Local Orchestration:** The entire orchestration layer (Apache Airflow & PostgreSQL Metadata) is containerized using `Docker Compose` and runs locally. This allows for rapid DAG testing without incurring persistent cloud compute costs.
 - **Cloud Execution:** Heavy-lifting tasks (Spark distributed processing, BigQuery Zero-ETL) are not executed locally. Instead, Airflow securely triggers these managed services directly on **Google Cloud Platform (GCP)**.
@@ -141,6 +142,10 @@ Cost optimization is a core architectural pillar of this project, ensuring a pro
 | **GCS** | Standard storage class. Columnar Parquet compression drastically reduces footprint. | < $0.10 / month |
 | **BigQuery** | **Zero-ETL**: External tables read directly from GCS. No internal storage costs are incurred. | Free Tier |
 | **Total** | — | **< $1.00 / month** |
+### 📉 Performance & Storage Benchmark (Real-world test)
+- Successfully processed a mock dataset of **~10,000 orders**.
+- The transformation from the Bronze layer (JSON format) to the Silver layer (Apache Iceberg/Parquet format) reduced the storage footprint from `~15.2MB` to `~4.1MB`.
+- Achieved a **73% compression rate**, which significantly optimizes subsequent BigQuery query scan costs.
 
 ### Cost Optimization Techniques
 
@@ -166,9 +171,20 @@ Cost optimization is a core architectural pillar of this project, ensuring a pro
 ---
 
 ## 📊 Results & Testing
-100% Data Quality Pass Rate: Automated dbt tests (unique, not_null) ensure absolute data integrity before dashboard rendering.
 
-Real-time Visualization: Looker Studio dashboards successfully reflect BigQuery Gold layer updates seamlessly.
+The project has been successfully executed end-to-end, passing all automated quality and orchestration checks:
+
+**1. Data Quality Gates (dbt Tests):**
+Achieved a 100% pass rate for all schema tests (`not_null`, `unique`) on critical columns (`transaction_id`, `amount`, `order_date`).
+![dbt Test Results](images/dbt_test.png)
+
+**2. Automated Orchestration (Airflow DAG):**
+End-to-end execution of all 4 tasks (Cluster Creation -> Spark Job -> Cluster Deletion) completed successfully without bottlenecks.
+![Airflow DAG Complete](images/airflow_dag.png)
+
+**3. Business Intelligence (Looker Studio):**
+Real-time interactive dashboard querying directly from the BigQuery Gold layer via Zero-ETL external tables.
+![Looker Studio Dashboard](images/dashboard.png)
 
 ## 🚀 Future Work
 Migrate Apache Airflow from local deployment to Google Cloud Composer for fully managed 24/7 orchestration.
