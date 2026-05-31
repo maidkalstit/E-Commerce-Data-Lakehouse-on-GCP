@@ -169,7 +169,22 @@ Cost optimization is a core architectural pillar of this project, ensuring a pro
 - **Savings**: Prevents storage bloat from historical pipeline runs
 
 ---
+## 🛡️ Fault Tolerance, Automated Alerting & IaC
 
+To transition this pipeline from a local prototype to a production-ready system, several enterprise-grade features have been integrated to handle data quality, infrastructure management, and failure recovery:
+
+### 1. Robust Error Handling & Fail-Safe Mechanisms
+* **Automated Cluster Cleanup:** The Dataproc cluster deletion task (`delete_dataproc_cluster`) is configured with `trigger_rule="all_done"`. This guarantees that the ephemeral Spark cluster is **always terminated**, even if the upstream PySpark processing job fails mid-way, eliminating any risk of cloud cost overruns.
+* **Proactive Alerting:** Integrated an automated failure callback mechanism. If any task within the Airflow DAG encounters an unrecoverable error, it triggers a Python function utilizing webhook integration to dispatch an immediate **Telegram Alert** with full task execution context.
+* **Resilience:** Critical pipeline tasks are equipped with automated retry logic (`retries=1`) and a 5-minute cooldown period to self-heal from transient cloud network hiccups.
+
+### 2. Data Freshness & Quality Enforcement (dbt)
+* **Freshness SLA Monitoring:** Implemented a dedicated `sources.yml` metadata layer within dbt to monitor data latency on the BigQuery Silver layer using the `ingested_at` timestamp.
+* **SLA Thresholds:** The system is configured to trigger a **Warning** if new data fails to arrive within 12 hours, and will actively raise an **Error** to halt downstream processing if the data latency exceeds 24 hours.
+
+### 3. Infrastructure as Code (IaC via Terraform)
+* **Declarative Provisioning:** Shifted from manual GCP Console clicking to automated infrastructure deployment. All core cloud assets—including Google Cloud Storage (GCS) staging buckets with 30-day lifecycle expiration policies and BigQuery target datasets—are declared programmatically inside `terraform/main.tf`.
+* **Environment Consistency:** This ensures 100% reproducible deployments across Development, Staging, and Production environments with zero manual intervention.
 ## 📊 Results & Testing
 
 The project has been successfully executed end-to-end, passing all automated quality and orchestration checks:
@@ -184,7 +199,22 @@ End-to-end execution of all 4 tasks (Cluster Creation -> Spark Job -> Cluster De
 
 **3. Business Intelligence (Looker Studio):**
 Real-time interactive dashboard querying directly from the BigQuery Gold layer via Zero-ETL external tables.
-![Looker Studio Dashboard](images/dashboard.png)
+![Looker Studio Dashboard](images/dashboard.png)## 🛡️ Fault Tolerance, Automated Alerting & IaC
+
+To transition this pipeline from a local prototype to a production-ready system, several enterprise-grade features have been integrated to handle data quality, infrastructure management, and failure recovery:
+
+### 1. Robust Error Handling & Fail-Safe Mechanisms
+* **Automated Cluster Cleanup:** The Dataproc cluster deletion task (`delete_dataproc_cluster`) is configured with `trigger_rule="all_done"`. This guarantees that the ephemeral Spark cluster is **always terminated**, even if the upstream PySpark processing job fails mid-way, eliminating any risk of cloud cost overruns.
+* **Proactive Alerting:** Integrated an automated failure callback mechanism. If any task within the Airflow DAG encounters an unrecoverable error, it triggers a Python function utilizing webhook integration to dispatch an immediate **Telegram Alert** with full task execution context.
+* **Resilience:** Critical pipeline tasks are equipped with automated retry logic (`retries=1`) and a 5-minute cooldown period to self-heal from transient cloud network hiccups.
+
+### 2. Data Freshness & Quality Enforcement (dbt)
+* **Freshness SLA Monitoring:** Implemented a dedicated `sources.yml` metadata layer within dbt to monitor data latency on the BigQuery Silver layer using the `ingested_at` timestamp.
+* **SLA Thresholds:** The system is configured to trigger a **Warning** if new data fails to arrive within 12 hours, and will actively raise an **Error** to halt downstream processing if the data latency exceeds 24 hours.
+
+### 3. Infrastructure as Code (IaC via Terraform)
+* **Declarative Provisioning:** Shifted from manual GCP Console clicking to automated infrastructure deployment. All core cloud assets—including Google Cloud Storage (GCS) staging buckets with 30-day lifecycle expiration policies and BigQuery target datasets—are declared programmatically inside `terraform/main.tf`.
+* **Environment Consistency:** This ensures 100% reproducible deployments across Development, Staging, and Production environments with zero manual intervention.
 
 ## 🚀 Future Work
 Migrate Apache Airflow from local deployment to Google Cloud Composer for fully managed 24/7 orchestration.

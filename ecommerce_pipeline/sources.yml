@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: silver_data
+    database: "{{ env_var('GCP_PROJECT_ID') }}"
+    schema: gold_sales
+    tables:
+      - name: stg_transactions_silver
+        # Kiểm tra độ tươi của dữ liệu dựa trên cột thời gian đẩy vào
+        loaded_at_field: ingested_at
+        freshness:
+          warn_after: {count: 12, period: hour} # Cảnh báo nếu dữ liệu cũ hơn 12 tiếng
+          error_after: {count: 24, period: hour} # Đánh fail pipeline nếu cũ hơn 24 tiếng
