@@ -1,0 +1,65 @@
+.env
+*.pem
+*.key
+*.pk8
+*-key.json
+*credentials*.json
+
+# ==========================================
+# 🐍 PYTHON & VIRTUAL ENVIRONMENT
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env.bak/
+.Python
+
+# ==========================================
+# 🌬️ APACHE AIRFLOW
+# ==========================================
+airflow.cfg
+unittests.cfg
+airflow.db
+airflow-webserver.pid
+logs/
+standalone_admin_password.txt
+
+# ==========================================
+# 🏗️ dbt (DATA BUILD TOOL)
+# ==========================================
+target/
+dbt_packages/
+**/logs/
+**/target/
+ecommerce_pipeline/logs/
+ecommerce_pipeline/target/
+*.log
+edb.log
+
+# ==========================================
+# 💻 IDE & OS (VS Code, Mac, Windows)
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+cloud_env.bat
+install_mode
+*.ico
+*.exe
+
+# ==========================================
+# 🔐 GCP SDK & CREDENTIALS
+# ==========================================
+google-cloud-sdk/
+.secrets.baseline
+
+# ==========================================
+# 📊 LOCAL DATA
+# ==========================================
+data/
+*.csv
+*.parquet

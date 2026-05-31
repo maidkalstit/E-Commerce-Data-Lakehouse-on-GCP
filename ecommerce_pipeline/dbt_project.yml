@@ -1,0 +1,31 @@
+# Name your project! 
+name: 'ecommerce_pipeline'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'ecommerce_pipeline'
+
+# These configurations specify where dbt should look for different types of files.
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# ==============================================================================
+# CẤU HÌNH THƯ MỤC MODELS 
+# ==============================================================================
+models:
+  ecommerce_pipeline:
+    # Tầng Staging (Bạc - Đọc trực tiếp từ GCS Parquet qua Zero-ETL)
+    staging:
+      +materialized: view
+      
+    # Tầng Marts (Vàng - Lưu trữ kết quả Report xuống BigQuery nội bộ để tăng tốc BI)
+    marts:
+      +materialized: table
