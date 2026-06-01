@@ -169,6 +169,7 @@ Cost optimization is a core architectural pillar of this project, ensuring a pro
 - **Savings**: Prevents storage bloat from historical pipeline runs
 
 ---
+
 ## 🛡️ Fault Tolerance, Automated Alerting & IaC
 
 To transition this pipeline from a local prototype to a production-ready system, several enterprise-grade features have been integrated to handle data quality, infrastructure management, and failure recovery:
